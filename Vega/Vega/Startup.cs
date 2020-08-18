@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Vega.Persistence;
+using AutoMapper;
 
 namespace Vega
 {
@@ -23,6 +24,8 @@ namespace Vega
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
+
+            services.AddAutoMapper(typeof(Startup));
             // In production, the Angular files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
             {
