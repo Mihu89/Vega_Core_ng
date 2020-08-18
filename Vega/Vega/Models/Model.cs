@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -14,7 +15,7 @@ namespace Vega.Models
         [Required]
         [StringLength(250)]
         public string Name { get; set; }
-        public int MakeId { get; set; }
+        [JsonIgnore]
         public Make Make { get; set; }
     }
 }
