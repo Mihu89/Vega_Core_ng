@@ -31,7 +31,7 @@ import { VehicleFormComponent } from './components/vehicle-form/vehicle-form.com
       { path: 'fetch-data', component: FetchDataComponent },
     ])
   ],
-  providers: [],
+  providers: [], //register services
   bootstrap: [AppComponent]
 })
 export class AppModule { }
