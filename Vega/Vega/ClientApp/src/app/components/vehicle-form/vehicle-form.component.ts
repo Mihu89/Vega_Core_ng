@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { MakeService } from '../../services/make.service';
-import { FeatureService } from '../../services/feature.service';
+import { MakeService, FeatureService, VehicleService} from '../../services';
 
 @Component({
     selector: 'app-vehicle-form',
@@ -16,7 +15,8 @@ export class VehicleFormComponent implements OnInit {
 
     features: any[];
     constructor(private makeService: MakeService,
-        private featureService: FeatureService
+        private featureService: FeatureService,
+        private vehicleService: VehicleService
     ) {
     }
 
@@ -34,6 +34,10 @@ export class VehicleFormComponent implements OnInit {
     onMakeChange() {
         let selectedMake = this.makes.find(m => m.id == this.vehicle.make);
         this.models = selectedMake ? selectedMake.models : [];
+    }
+
+    createVehicle(){
+
     }
 
 }
