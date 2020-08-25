@@ -22,6 +22,7 @@ namespace Vega.Controllers
             _context = context;
         }
 
+        // POST api/Vehicle/CreateVehicle
         [HttpPost]
         public async Task<IActionResult> CreateVehicle([FromBody] VehicleResource vehicleResource)
         {

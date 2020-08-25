@@ -8,6 +8,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Vega.Persistence;
 using AutoMapper;
+using System;
+using System.IO;
 
 namespace Vega
 {
@@ -33,6 +35,33 @@ namespace Vega
             });
 
             services.AddDbContext<VegaDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("Default")));
+
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+                {
+                    Version = "v1",
+                    Title = "My API v1",
+                    Description = "Api for Vega Project",
+                    Contact = new Microsoft.OpenApi.Models.OpenApiContact
+                    {
+                        Name = "StepIT",
+                        Email = "sytep@gmail.com",
+                        Url = new Uri("https://itstep.org")
+                    },
+                    License = new Microsoft.OpenApi.Models.OpenApiLicense
+                    {
+                        Name = "Open GPL3",
+                        Url = new Uri("https://cts.it.md/license")
+                    }
+                });
+
+                //var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                //var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                //c.IncludeXmlComments(xmlPath);
+            });
+
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -50,11 +79,24 @@ namespace Vega
             }
 
             app.UseHttpsRedirection();
-           // app.UseStaticFiles();
+            // app.UseStaticFiles();
             if (!env.IsDevelopment())
             {
                 app.UseSpaStaticFiles();
             }
+
+            app.UseSwagger(); 
+
+            app.UseSwaggerUI(c =>
+           {
+               c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API v1");
+               c.RoutePrefix = string.Empty;
+           });
+
+            //app.UseSwagger(c =>
+            //{
+            //    c.SerializeAsV2 = true;
+            //});
 
             app.UseRouting();
 
