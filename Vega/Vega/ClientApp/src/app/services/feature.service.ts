@@ -7,9 +7,10 @@ import { Observable } from 'rxjs';
 })
 export class FeatureService {
 
+  serverApi = "https://localhost:44371"
   constructor(private http: HttpClient) { }
 
   getFeatures() {
-    return this.http.get('/api/features');
+    return this.http.get(`${this.serverApi}/api/features`);
   }
 }

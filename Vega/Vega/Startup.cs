@@ -10,11 +10,16 @@ using Vega.Persistence;
 using AutoMapper;
 using System;
 using System.IO;
+using Vega.Core;
+using Vega.Core.Models;
+using Vega.Controllers;
 
 namespace Vega
 {
     public class Startup
     {
+        readonly string MyCustomPolicyOrigin = "_myCustomPolicyOrigin";
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -25,6 +30,30 @@ namespace Vega
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+
+            services.Configure<PhotoSettings>(Configuration.GetSection("PhotoSettings"));
+
+            services.AddScoped<IVehicleRepository, VehicleRepository>();
+            services.AddScoped<IPhotoRepository, PhotoRepository>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddTransient<IPhotoService, PhotoService>();
+            services.AddTransient<IPhotoStorage, FileSystemPhotoStorage>();
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy(name: MyCustomPolicyOrigin,
+                    builder =>
+                    {
+                        builder
+                        .AllowAnyOrigin()
+                        //.WithOrigins("https://localhost:4200",
+                        //   "https://localhost:44371")
+                        .AllowAnyHeader()
+                        .AllowAnyMethod();
+ 
+                    });
+            });
+
             services.AddControllersWithViews();
 
             services.AddAutoMapper(typeof(Startup));
@@ -35,6 +64,10 @@ namespace Vega
             });
 
             services.AddDbContext<VegaDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("Default")));
+
+            services.AddAuthorization(options => {
+                options.AddPolicy(Policies.RequireAdminRole, policy => policy.RequireClaim("https://vega.com/roles", "Admin"));
+            });
 
             services.AddSwaggerGen(c =>
             {
@@ -90,22 +123,20 @@ namespace Vega
             app.UseSwaggerUI(c =>
            {
                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API v1");
-               c.RoutePrefix = string.Empty;
+             //  c.RoutePrefix = string.Empty;
            });
 
-            //app.UseSwagger(c =>
+            //var options = new JwtBearerOptions
             //{
-            //    c.SerializeAsV2 = true;
-            //});
+            //    Audience = "https://api.vega.com",
+            //    Authority = "https://vegaproject.auth0.com/"
+            //};
+            //app.UseJwtBearerAuthentication(options);
 
             app.UseRouting();
 
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllerRoute(
-                    name: "default",
-                    pattern: "{controller}/{action=Index}/{id?}");
-            });
+            app.UseCors(MyCustomPolicyOrigin);
+
 
             app.UseSpa(spa =>
             {
@@ -118,6 +149,12 @@ namespace Vega
                 {
                     spa.UseAngularCliServer(npmScript: "start");
                 }
+            });  
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: "{controller}/{action=Index}/{id?}");
             });
         }
     }

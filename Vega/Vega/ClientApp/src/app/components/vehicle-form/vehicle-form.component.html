@@ -1,45 +1,52 @@
 <h1>New Vehicle</h1>
-<form>
+<p>{{vehicle | json }}</p>
+<form #form ="ngForm" (ngSubmit)="submit()" novalidate>
     <div class="form-group">
         <label for="make">Make</label>
-        <select name="make" id="make" class="form-control" (change)="onMakeChange()" [(ngModel)]="vehicle.make">
+        <select name="make" id="make" class="form-control" (change)="onMakeChange()" 
+        [(ngModel)]="vehicle.makeId" [ngModelOptions]="{standalone: true}" required #make="ngModel">
             <option value=''></option>
             <option *ngFor="let make of makes" value="{{make.id}}">{{ make.name }}</option>
         </select>
+        <div class="alert alert-danger" *ngIf="make.touched && !make.valid">Please choose an make</div>
     </div>
     <div class="form-group">
         <label for="model">Model</label>
-        <select id="model" class="form-control">
+        <select id="model" class="form-control" [(ngModel)] = "vehicle.modelId" [ngModelOptions]="{standalone: true}" required #model="ngModel">
             <!-- <option value=''></option> -->
             <option *ngFor="let model of models" value="{{model.id}}">{{model.name}}</option>
         </select>
+        <div class="alert alert-danger" *ngIf="model.touched && !model.valid">Please choose an model</div>
     </div>
     <h2>Features</h2>
     <div *ngFor="let feature of features" class="checkbox">
         <label for="feature{{feature.id}}">
-            <input type="checkbox" id="feature{{feature.id}}"> {{feature.name}}
+            <input type="checkbox" id="feature{{feature.id}}" (change)="onFeatureToggle(feature.id, $event)" [checked]="vehicle.features.includes(f.id)"> {{feature.name}}
         </label>
     </div>
     <p>Is vechicle registered ?</p>
     <label for="registered" class="radio-inline">
-        <input type="checkbox" name="registered" id="registered" value="true">Yes
+        <input type="radio" name="registered" id="registered" value="true" [(ngModel)]="vehicle.isRegistered" [ngModelOptions]="{standalone: true}">Yes
     </label>
     <label for="notRegistered" class="radio-inline">
-        <input type="checkbox" name="notRegistered" id="notRegistered" value="false">No
+        <input type="radio" name="notRegistered" id="notRegistered" value="false" [(ngModel)]="vehicle.isRegistered" [ngModelOptions]="{standalone: true}">No
     </label>
     <h2>Contact details</h2>
     <div class="form-group">
         <label for="contactName">Name</label>
-        <input id="contactName" type="text" class="form-control">            
+        <input id="contactName" type="text" class="form-control" [(ngModel)]="vehicle.contact.contactName" [ngModelOptions]="{standalone: true}" name="contactName" required #contactName="ngModel">            
+        <div class="alert alert-danger" *ngIf="contactName.touched && !contactName.valid">Please write your name</div>
     </div>
     <div class="form-group">
         <label for="contactPhone">Phone</label>
-        <input id="contactPhone" type="text" class="form-control">            
+        <input id="contactPhone" type="text" class="form-control" [(ngModel)]="vehicle.contact.contactPhone" [ngModelOptions]="{standalone: true}" name="contactPhone" required #contactPhone="ngModel">            
+        <div class="alert alert-danger" *ngIf="contactPhone.touched && !contactPhone.valid">Please write your Phone</div>
     </div>
     <div class="form-group">
         <label for="contactEmail">Email</label>
-        <input id="contactEmail" type="text" class="form-control">            
+        <input id="contactEmail" type="text" class="form-control" [(ngModel)]="vehicle.contact.contactEmail" [ngModelOptions]="{standalone: true}" name="contactEmail" required #contactEmail="ngModel">            
+        <div class="alert alert-danger" *ngIf="contactEmail.touched && !contactEmail.valid">Please write your email</div>
     </div>
-    <button class="btn btn-primary" (click)="createVehicle()">Save</button>
+    <button class="btn btn-primary" type="submit" [disabled]="!form.valid">Save</button>
 
 </form>
